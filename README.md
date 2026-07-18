@@ -1,160 +1,127 @@
-# 📖 AiNews - 科技新闻自动爬虫 + 企业微信推送
+# AiNews - 科技新闻自动爬虫 + 企业微信推送
 
-完整的自动化科技新闻爬虫系统，每天定时爬取全球最新科技新闻，并推送到企业微信群组。
+自动化科技新闻爬虫系统，每天定时爬取全球最新科技新闻，推送到企业微信群组。
 
-## ✨ 核心功能
+## 功能
 
-- 🌍 **多源新闻爬虫** - 从 HackerNews、TechCrunch 等爬取最新科技新闻
-- 📱 **企业微信推送** - 将新闻结构化推送到企业微信群组
-- ⏰ **定时自动执行** - GitHub Actions 每天自动运行
-- 📊 **结构化数据** - 统一的数据格式便于扩展
-- 🔄 **自动重试机制** - 失败自动重试确保可靠性
-- 📝 **完整日志** - 详细的执行日志便于调试和监控
+- 从 HackerNews、TechCrunch 等 RSS 源爬取最新科技新闻
+- 自动推送到企业微信群组（新闻卡片格式）
+- GitHub Actions 每天定时执行，支持手动触发
+- 自动重试机制，失败自动恢复
+- 完整的执行日志
 
-## 🚀 快速开始
-
-### 前置要求
-- Python 3.11+
-- 企业微信账号和群组
-- GitHub 账户和仓库
-
-### 1️⃣ 获取企业微信 Webhook Key
-
-```
-企业微信 → 群聊 → 群机器人 → 添加机器人 → 复制 Webhook URL
-从 URL 中提取 key 值：https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY_HERE
-```
-
-### 2️⃣ 配置 GitHub Secret
-
-1. 进入仓库 **Settings** → **Secrets and variables** → **Actions**
-2. 创建新 Secret：
-   - **Name**: `WEIXIN_WEBHOOK_KEY`
-   - **Value**: 你的 webhook key
-3. 保存
-
-### 3️⃣ 手动触发工作流
-
-1. 进入 **Actions** 标签
-2. 选择 **Daily Tech News Scraper**
-3. 点击 **Run workflow**
-4. 等待 2-3 分钟，查看企业微信群
-
-### 4️⃣ 自动定时执行
-
-工作流已配置为每天 **09:00 UTC**（北京时间 17:00）自动运行
-
-## 📁 项目结构
+## 项目结构
 
 ```
 ainews/
-├── scraper.py              # 主爬虫脚本
-├── quickstart.py           # 快速开始工具
-├── daily-scraper.yml       # GitHub Actions 工作流（位置：.github/workflows/）
-├── .env.example            # 环境变量模板
-├── requirements.txt        # Python 依赖
-├── README.md               # 本文档
-└── SETUP.md               # 详细配置指南
+├── .github/workflows/       # GitHub Actions 工作流
+│   ├── daily-scraper.yml    # 每日爬虫 + WeChat 推送
+│   └── quality-check.yml    # 代码质量检查
+├── src/                     # 源代码
+│   ├── config.py            # 配置管理
+│   ├── scraper.py           # 主爬虫脚本（WeChat 推送）
+│   ├── main.py              # 本地爬虫运行器
+│   ├── quickstart.py        # 快速开始工具
+│   └── scrapers/            # 爬虫模块
+│       ├── base_scraper.py  # 基础爬虫类
+│       └── news_scraper.py  # 新闻爬虫实现
+├── .env.example             # 环境变量模板
+├── requirements.txt         # Python 依赖
+└── README.md
 ```
 
-## 🔧 本地测试
+## 快速开始
 
-### 安装依赖
+### 前置条件
+
+- Python 3.11+
+- 企业微信群组和机器人
+
+### 1. 安装依赖
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### 设置环境变量
+### 2. 获取企业微信 Webhook Key
+
+1. 企业微信 → 群聊 → 群机器人 → 添加机器人
+2. 复制 Webhook URL，提取 `key` 参数值：
+   ```
+   https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY_HERE
+   ```
+
+### 3. 本地运行
+
 ```bash
-# Linux/Mac
+# 设置环境变量
+# Windows:
+set WEIXIN_WEBHOOK_KEY=your_key_here
+
+# Linux/Mac:
 export WEIXIN_WEBHOOK_KEY="your_key_here"
 
-# Windows
-set WEIXIN_WEBHOOK_KEY=your_key_here
-```
-
-### 运行爬虫
-```bash
+# 运行爬虫
+cd src
 python scraper.py
 ```
 
-### 查看快速开始指南
-```bash
-python quickstart.py
-```
+## GitHub Actions 自动化
 
-## 📊 工作流配置
+### 配置 Secret
 
-| 属性 | 值 |
-|------|-----|
-| **触发方式** | 定时 + 手动 |
-| **执行时间** | 每天 09:00 UTC |
-| **运行环境** | Ubuntu Latest |
-| **Python 版本** | 3.11 |
-| **依赖** | requests, feedparser |
+1. 进入仓库 **Settings** → **Secrets and variables** → **Actions**
+2. 点击 **New repository secret**
+3. Name: `WEIXIN_WEBHOOK_KEY`，Value: 你的 webhook key
+4. 保存
 
-## 📈 监控执行
+### 执行方式
 
-### 查看执行历史
-1. 仓库 → **Actions** 标签
-2. 选择 **Daily Tech News Scraper**
-3. 查看所有历史执行
+- **定时执行**：每天 UTC 09:00（北京时间 17:00）自动运行
+- **手动触发**：Actions → Daily Tech News Scraper → Run workflow
 
-### 查看详细日志
-1. 点击具体的执行记录
-2. 展开 **Run tech news scraper** 步骤
-3. 查看完整的执行输出
+### 代码质量检查
 
-## 🛠️ 高级配置
+每次 push 到 main 分支会自动运行：
+- Flake8 代码检查
+- 模块导入测试
+- 敏感信息扫描
 
-### 修改爬取数量
-编辑 `scraper.py`：
+## 配置说明
+
+环境变量（参考 `.env.example`）：
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `WEIXIN_WEBHOOK_KEY` | 必需 | 企业微信 Webhook Key |
+| `SCRAPER_TIMEOUT` | 10 | HTTP 请求超时（秒） |
+| `SCRAPER_RETRIES` | 3 | 失败重试次数 |
+| `SCRAPER_DELAY` | 1 | 请求间隔（秒） |
+
+## 添加新闻源
+
+编辑 `src/config.py` 中的 `NEWS_SOURCES` 列表：
+
 ```python
-for entry in feed.entries[:3]:  # 修改数字
+NEWS_SOURCES = [
+    {
+        'name': 'BBC News',
+        'url': 'https://www.bbc.com/news',
+        'category': 'world',
+    },
+    # 添加更多新闻源...
+]
 ```
 
-### 添加新闻源
-编辑 `scraper.py` 的 `RSS_FEEDS` 列表
+## 常见问题
 
-### 修改执行时间
-编辑 `.github/workflows/daily-scraper.yml` 的 cron 表达式
-
-## ❓ 常见问题
-
-### Q: 没有收到推送？
-- 检查 GitHub Secret 是否正确设置
-- 验证 webhook key 是否正确
+**Q: 没有收到推送？**
+- 检查 GitHub Secret 中的 WEIXIN_WEBHOOK_KEY 是否正确
 - 查看 Actions 执行日志
-- 确保企业微信群组允许机器人发送
 
-### Q: 如何立即运行？
-- 进入 Actions → 选择工作流 → 点击 Run workflow
-
-### Q: 如何修改执行时间？
+**Q: 如何修改执行时间？**
 - 编辑 `.github/workflows/daily-scraper.yml` 中的 cron 表达式
 
-### Q: 支持哪些新闻源？
-- HackerNews
-- TechCrunch
-- 可自行添加其他 RSS 源
+## License
 
-## 📚 文档
-
-- **SETUP.md** - 详细的配置和使用指南
-- **scraper.py** - 爬虫主脚本
-- **quickstart.py** - 快速开始验证工具
-
-## 🔒 安全建议
-
-✅ 永远不要在代码中硬编码 webhook key
-✅ 使用 GitHub Secrets 存储敏感信息
-✅ 定期检查 Actions 日志
-✅ 及时更新依赖包
-
-## 📄 许可证
-
-MIT License
-
----
-
-**需要帮助？** 查看 `SETUP.md` 获取详细配置指南
+MIT

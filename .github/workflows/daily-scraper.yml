@@ -12,38 +12,29 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: 📥 Checkout code
+    - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: 🐍 Set up Python 3.11
+    - name: Set up Python 3.11
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
         cache: 'pip'
     
-    - name: 📦 Install dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: ✅ Verify dependencies
-      run: |
-        python verify_dependencies.py
-    
-    - name: 🚀 Run tech news scraper
+    - name: Run tech news scraper
       env:
         WEIXIN_WEBHOOK_KEY: ${{ secrets.WEIXIN_WEBHOOK_KEY }}
       run: |
-        echo "=========================================="
-        echo "🤖 Tech News Scraper Starting"
-        echo "=========================================="
+        cd src
         python scraper.py
-        echo "=========================================="
-        echo "✅ Scraper completed"
-        echo "=========================================="
     
-    - name: 📊 Check execution status
+    - name: Check execution status
       if: always()
       run: |
-        echo "✅ Workflow Status: ${{ job.status }}"
-        echo "⏰ Execution Time: $(date)"
+        echo "Workflow Status: ${{ job.status }}"
+        echo "Execution Time: $(date)"
