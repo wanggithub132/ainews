@@ -374,11 +374,16 @@ def _extract_initial_data(html):
     return json.loads(m.group(1)) if m else None
 
 
-def search_youtube(query, max_items=400):
-    """搜索 YouTube 并翻页，返回视频列表（含频道信息）。"""
+def search_youtube(query, max_items=400, sp=None):
+    """搜索 YouTube 并翻页，返回视频列表（含频道信息）。
+
+    sp: 可选搜索过滤/排序参数，如 'CAI%253D' 表示按上传日期排序（最新优先）。
+    """
     import urllib.parse
     q = urllib.parse.quote(query)
     url = f'https://www.youtube.com/results?search_query={q}&hl=zh-CN&gl=HK'
+    if sp:
+        url += f'&sp={sp}'
     print(f"  搜索: {query}")
     try:
         html = http_get(url)
